@@ -1,0 +1,2989 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missionskontrolle / Dashboard — CoderXP</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --neon-blue: #00d4ff;
+  --neon-green: #00ff88;
+  --neon-purple: #a855f7;
+  --neon-pink: #ff006e;
+  --neon-orange: #ff6600;
+  --bg-dark: #0a0e1a;
+  --bg-card: #0d1225;
+  --bg-card-hover: #111a35;
+  --border-glow: rgba(0, 212, 255, 0.3);
+  --text-primary: #e0f0ff;
+  --text-secondary: #8899bb;
+  --glass-bg: rgba(13, 18, 37, 0.85);
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
+
+/* Top Header */
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(10, 14, 26, 0.98) 0%, rgba(10, 14, 26, 0.9) 100%);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-section h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+
+.logo-section .subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.project-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.header-center {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-create {
+  font-family: 'Rajdhani', sans-serif;
+  padding: 8px 20px;  border: 1px solid var(--neon-green);
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--neon-green);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-create:hover {
+  background: rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.btn-workspace {
+  font-family: 'Rajdhani', sans-serif;
+  padding: 8px 20px;
+  border: 1px solid var(--neon-purple);
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--neon-purple);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-workspace:hover {
+  background: rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 20px;
+  background: rgba(0, 255, 136, 0.05);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 4px var(--neon-green); }
+  50% { box-shadow: 0 0 12px var(--neon-green), 0 0 20px rgba(0, 255, 136, 0.3); }
+}
+
+.system-status span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--neon-green);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.profile-container {
+  position: relative;
+}
+
+.profile-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-blue);
+  background: linear-gradient(135deg, #1a2040, #0d1225);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.profile-btn:hover {  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  border-color: var(--neon-green);
+}
+
+.profile-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--neon-blue);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 240px;
+  background: var(--glass-bg);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px;
+  display: none;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+.profile-dropdown.active { display: block; }
+
+.profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.profile-dropdown-item:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--neon-blue);
+}
+
+.profile-dropdown-item svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--text-secondary);
+  transition: fill 0.2s ease;}
+
+.profile-dropdown-item:hover svg { fill: var(--neon-blue); }
+
+.profile-divider {
+  height: 1px;
+  background: rgba(0, 212, 255, 0.1);
+  margin: 6px 0;
+}
+
+/* Main Content */
+.main-content {
+  padding: 20px 24px;
+  padding-bottom: 80px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Section Content */
+.section-content {
+  display: none;
+}
+
+.section-content.active {
+  display: block;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
+
+/* Orchestrator Panel */
+.orchestrator-panel {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.orchestrator-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;  height: 200%;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.03) 0%, transparent 50%);
+  animation: orchestratorGlow 4s ease-in-out infinite;
+}
+
+@keyframes orchestratorGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.orchestrator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.orchestrator-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--neon-blue);
+  letter-spacing: 1px;
+}
+
+.orchestrator-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.status-badge.ready {  background: rgba(0, 212, 255, 0.15);
+  color: var(--neon-blue);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.orchestrator-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--neon-green);
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.orchestrator-avatar {
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 260px;
+  position: relative;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-container {
+  position: relative;  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  animation: orchestratorAvatarPulse 3s ease-in-out infinite;
+}
+
+@keyframes orchestratorAvatarPulse {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), inset 0 0 15px rgba(0, 212, 255, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.15), inset 0 0 20px rgba(0, 212, 255, 0.2);
+  }
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-ring {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  animation: ringRotate 10s linear infinite;
+}
+
+@keyframes ringRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--neon-blue);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px var(--neon-blue);}
+
+.orchestrator-label {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.mini-chart {
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.mini-chart canvas {
+  width: 100%;
+  height: 60px;
+}
+
+/* Agent Grid */
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+/* Agent Card */
+.agent-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.agent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.agent-card:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.agent-card:hover::before { opacity: 1; }
+
+.agent-card.active-agent {
+  border-color: rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1), inset 0 0 20px rgba(0, 255, 136, 0.02);
+}
+
+.agent-card.active-agent::before {
+  background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+  opacity: 1;
+}
+
+.agent-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.agent-number {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.agent-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.agent-role-badge.active {
+  background: rgba(0, 255, 136, 0.15);  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+}
+
+.agent-role-badge.ready {
+  background: rgba(0, 212, 255, 0.15);
+  color: var(--neon-blue);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+}
+
+.agent-role-badge.inactive {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agent-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.agent-task {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+  min-height: 30px;
+}
+
+.agent-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.agent-avatar-small {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.agent-card.active-agent .agent-avatar-small {
+  border-color: rgba(0, 255, 136, 0.4);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+}
+
+.agent-avatar-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.agent-progress-info {
+  flex: 1;
+}
+
+.progress-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+  position: relative;
+}
+
+.progress-bar.active-progress {
+  background: linear-gradient(90deg, var(--neon-green), #00cc6a);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+
+.progress-bar.ready-progress {
+  background: linear-gradient(90deg, var(--neon-blue), #0099cc);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+.progress-bar::after {  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: progressShimmer 2s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.agent-progress-pct {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-green);
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.agent-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agent-current-task {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.agent-metrics {
+  display: flex;
+  gap: 8px;
+}
+
+.metric-pill {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 212, 255, 0.08);
+  color: var(--text-secondary);
+  font-family: 'Share Tech Mono', monospace;
+}
+/* Agent Detail Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 850px;
+  max-height: 95vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+.modal-close:hover {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: rgba(255, 0, 0, 0.4);
+  color: #ff4444;
+}
+
+.modal-header {
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+}
+
+.modal-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-title-group h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.modal-title-group p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.modal-body { padding: 20px 28px; }
+
+.modal-section {
+  margin-bottom: 20px;
+}
+
+.modal-section-title {
+  font-family: 'Orbitron', sans-serif;  font-size: 11px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.modal-task-desc {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  background: rgba(0, 212, 255, 0.03);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.modal-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.modal-progress-bar {
+  flex: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.modal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-green), #00cc6a);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+  transition: width 1s ease;
+}
+
+.modal-progress-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--neon-green);
+  min-width: 50px;
+}
+.log-container {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.log-entry {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.log-time { color: var(--text-secondary); min-width: 70px; }
+.log-level-info { color: var(--neon-blue); }
+.log-level-warn { color: var(--neon-orange); }
+.log-level-success { color: var(--neon-green); }
+.log-msg { color: var(--text-primary); }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  padding: 16px 28px 24px;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.btn-modal {
+  font-family: 'Rajdhani', sans-serif;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  border: 1px solid;
+}
+
+.btn-pause {
+  background: rgba(255, 102, 0, 0.1);
+  border-color: rgba(255, 102, 0, 0.3);
+  color: var(--neon-orange);
+}
+.btn-pause:hover {
+  background: rgba(255, 102, 0, 0.2);
+  box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+}
+
+.btn-inspect {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-blue);
+}
+
+.btn-inspect:hover {
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.btn-resume {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.3);
+  color: var(--neon-green);
+}
+
+.btn-resume:hover {
+  background: rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.btn-save {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.35);
+  color: var(--neon-blue);
+}
+
+.btn-save:hover {
+  background: rgba(0, 212, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(10, 14, 26, 0.95) 0%, rgba(10, 14, 26, 0.98) 100%);
+  border-top: 1px solid rgba(0, 212, 255, 0.15);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;  justify-content: center;
+  gap: 4px;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  overflow-x: auto;
+}
+
+.nav-item {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+.nav-item.active {
+  color: var(--neon-blue);
+  background: rgba(0, 212, 255, 0.12);
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: var(--neon-blue);
+  border-radius: 1px;
+  box-shadow: 0 0 6px var(--neon-blue);
+}
+
+/* Section Pages */
+.section-page {
+  display: none;
+}
+.section-page.active { display: block; }
+
+.section-hero {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.section-hero h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.section-hero p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 14px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  border-color: rgba(0, 212, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.info-card h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  margin-bottom: 10px;  letter-spacing: 1px;
+}
+
+.info-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.info-card .card-metric {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--neon-green);
+  margin: 10px 0;
+}
+
+/* Monitoring Charts */
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 16px 20px;
+}
+
+.chart-container h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.chart-container canvas {
+  width: 100%;
+  height: 120px;
+}
+
+/* Create Project Modal */
+.create-project-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 600;  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.create-project-modal.active { display: flex; }
+
+.create-project-content {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 136, 0.1);
+}
+
+.create-project-content h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-green);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;  transition: all 0.3s ease;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-submit {
+  flex: 1;
+  padding: 10px 24px;
+  background: rgba(0, 255, 136, 0.15);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: var(--neon-green);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: rgba(0, 255, 136, 0.25);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Credits Modal */
+.credits-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 600;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.credits-modal.active { display: flex; }
+
+.credits-content {
+  background: var(--bg-card);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.credits-content h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-purple);
+  margin-bottom: 20px;
+}
+
+.credits-amount {
+  font-family: 'Orbitron', sans-serif;  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+}
+
+.credits-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.referral-section {
+  background: rgba(168, 85, 247, 0.05);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.referral-section h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  color: var(--neon-purple);
+  margin-bottom: 8px;
+}
+
+.referral-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.referral-link input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+}
+
+.btn-copy {
+  padding: 8px 14px;
+  background: rgba(168, 85, 247, 0.15);  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: var(--neon-purple);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-copy:hover {
+  background: rgba(168, 85, 247, 0.25);
+}
+
+/* Settings Panel */
+.settings-section {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.setting-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.setting-info p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  position: relative;  transition: all 0.3s ease;
+}
+
+.toggle-switch.active {
+  background: rgba(0, 212, 255, 0.3);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.active::after {
+  left: 23px;
+  background: var(--neon-blue);
+  box-shadow: 0 0 8px var(--neon-blue);
+}
+
+/* Search & Filter */
+.search-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--neon-blue);  box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-chip:hover, .filter-chip.active {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 24px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 10px;
+  color: var(--neon-green);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.toast.show { transform: translateX(0); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .orchestrator-panel {
+    display: flex;    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .orchestrator-avatar {
+    width: 120px;
+    height: 120px;
+  }
+  .avatar-container {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .header-center { display: none; }
+  .agents-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .bottom-nav {
+    justify-content: flex-start;
+    padding: 8px 12px;
+  }
+  .nav-item { padding: 6px 10px; font-size: 10px; }
+  .main-content { padding: 12px; padding-bottom: 80px; }
+  .section-grid { grid-template-columns: 1fr; padding: 0 12px; }
+}
+
+@media (max-width: 480px) {
+  .agents-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.agent-card { animation: fadeIn 0.5s ease forwards; }
+.agent-card:nth-child(1) { animation-delay: 0.05s; }
+.agent-card:nth-child(2) { animation-delay: 0.1s; }
+.agent-card:nth-child(3) { animation-delay: 0.15s; }
+.agent-card:nth-child(4) { animation-delay: 0.2s; }
+.agent-card:nth-child(5) { animation-delay: 0.25s; }.agent-card:nth-child(6) { animation-delay: 0.3s; }
+.agent-card:nth-child(7) { animation-delay: 0.35s; }
+.agent-card:nth-child(8) { animation-delay: 0.4s; }
+.agent-card:nth-child(9) { animation-delay: 0.45s; }
+.agent-card:nth-child(10) { animation-delay: 0.5s; }
+
+/* Pulse dot for active agents */
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  display: inline-block;
+  margin-right: 6px;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Holographic card effect */
+.holo-card {
+  position: relative;
+}
+
+.holo-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.03), transparent);
+  transition: left 0.6s ease;
+}
+
+.holo-card:hover::after {
+  left: 150%;
+}
+
+/* Chat feature in modal */
+.chat-section {
+  margin-top: 12px;
+}
+
+.chat-messages {
+  max-height: 120px;
+  overflow-y: auto;  margin-bottom: 8px;
+}
+
+.chat-msg {
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.chat-msg.user {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  margin-left: 20%;
+  text-align: right;
+}
+
+.chat-msg.agent {
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.12);
+  margin-right: 20%;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.chat-input-row input:focus {
+  outline: none;
+  border-color: var(--neon-blue);
+}
+
+.btn-chat-send {
+  padding: 8px 14px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--neon-blue);  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.btn-chat-send:hover {
+  background: rgba(0, 212, 255, 0.25);
+}
+
+/* Task scheduling */
+.schedule-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.schedule-row input, .schedule-row select {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* Resource usage bars */
+.resource-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.resource-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  width: 60px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resource-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;  overflow: hidden;
+}
+
+.resource-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.resource-fill.cpu { background: linear-gradient(90deg, var(--neon-blue), #0099ff); }
+.resource-fill.mem { background: linear-gradient(90deg, var(--neon-green), #00cc66); }
+.resource-fill.net { background: linear-gradient(90deg, var(--neon-purple), #cc66ff); }
+
+.resource-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text-primary);
+  width: 40px;
+  text-align: right;
+}
+
+/* Dark/Light mode */
+body.light-mode {
+  --bg-dark: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f7fa;
+  --text-primary: #1a1a2e;
+  --text-secondary: #666688;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+}
+
+body.light-mode .top-header {
+  background: linear-gradient(180deg, rgba(240, 242, 245, 0.98) 0%, rgba(240, 242, 245, 0.9) 100%);
+  border-bottom-color: rgba(0, 212, 255, 0.2);
+}
+
+body.light-mode .bottom-nav {
+  background: linear-gradient(180deg, rgba(240, 242, 245, 0.95) 0%, rgba(240, 242, 245, 0.98) 100%);
+  border-top-color: rgba(0, 212, 255, 0.2);
+}
+
+body.light-mode .search-input,
+body.light-mode .form-group input,
+body.light-mode .form-group select,
+body.light-mode .form-group textarea,
+body.light-mode .chat-input-row input {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .log-container {  background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .resource-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .progress-bar-container {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* API & Prompt Configuration Styles */
+.api-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.api-config-grid .form-group { margin-bottom: 0; }
+
+.prompt-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.prompt-textarea:focus {
+  outline: none;
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+
+.config-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {  .api-config-grid { grid-template-columns: 1fr; }
+  .modal-content { max-width: 95vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Header -->
+<header class="top-header">
+  <div class="header-left">
+    <div class="logo-section">
+      <h1>MISSIONSKONTROLLE</h1>
+      <div class="subtitle">VERWALTE 10 AUTONOME KI-AGENTEN</div>
+    </div>
+    <div class="project-name">PROJEKT: VIBE CODING PLATFORM</div>
+  </div>
+  <div class="header-center">
+    <button class="btn-create" onclick="openCreateProject()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Projekt erstellen
+    </button>
+    <a class="btn-workspace" href="https://coderxp.pro/workspace" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Arbeitsbereich
+    </a>
+  </div>
+  <div class="header-right">
+    <div class="system-status">
+      <div class="status-dot"></div>
+      <span>SYSTEM AKTIV</span>
+    </div>
+    <div class="profile-container">
+      <button class="profile-btn" onclick="toggleProfileDropdown()">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-item" onclick="showToast('Profil-Seite in Kürze verfügbar')">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Profil
+        </div>
+        <div class="profile-dropdown-item" onclick="openCreditsModal()">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.94s4.18 1.36 4.18 3.85c0 1.89-1.44 2.93-3.12 3.19z"/></svg>
+          Credits
+        </div>
+        <div class="profile-dropdown-item" onclick="openCreditsModal()">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          Empfehlen
+        </div>
+        <div class="profile-divider"></div>
+        <div class="profile-dropdown-item" onclick="navigateTo('settings')">          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Einstellungen
+        </div>
+        <div class="profile-divider"></div>
+        <div class="profile-dropdown-item" onclick="showToast('Erfolgreich abgemeldet')" style="color: #ff4444;">
+          <svg viewBox="0 0 24 24" style="fill: #ff4444;"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+          Abmelden
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+  <!-- Dashboard Section -->
+  <div class="section-content active" id="section-dashboard">
+    <div class="dashboard-grid">
+      <!-- Orchestrator Panel -->
+      <div class="orchestrator-panel">
+        <div class="orchestrator-header">
+          <div>
+            <div class="orchestrator-title">PROJEKT-ORCHESTRIERER</div>
+          </div>
+          <div class="orchestrator-status">
+            <span class="status-badge active"><span class="pulse-dot"></span>AKTIV</span>
+          </div>
+        </div>
+        <div class="orchestrator-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="overallProgress">68%</div>
+            <div class="stat-label">Fortschritt</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" style="color: var(--neon-blue);">450/652</div>
+            <div class="stat-label">Aufgaben</div>
+          </div>
+        </div>
+        <div class="orchestrator-avatar">
+          <div class="avatar-container">
+            <img src="https://image.qwenlm.ai/public_source/c2724abc-8ead-4f46-917b-1224d838d449/1d0c9ced5-48d5-42e1-8803-fc84e35dd27f.png" alt="Orchestrator KI">
+            <div class="avatar-ring"></div>
+          </div>
+        </div>
+        <div class="orchestrator-label">ORCHESTRIERER</div>
+        <div class="mini-chart">
+          <canvas id="orchestratorChart"></canvas>
+        </div>
+      </div>
+      <!-- Agents Grid -->
+      <div class="agents-grid" id="agentsGrid">
+        <!-- Agent cards will be generated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Monitoring Section -->
+  <div class="section-content" id="section-monitoring">
+    <div class="section-hero">
+      <h2>SYSTEM-ÜBERWACHUNG</h2>
+      <p>Live-Systemmetriken, Agenten-Performance und Orchestrierungs-Logs</p>
+    </div>
+    <div class="search-filter-bar">
+      <input type="text" class="search-input" placeholder="🔍 Agenten nach Name, Status oder Aufgabe suchen..." id="agentSearch" oninput="filterAgents()">
+      <div class="filter-chip active" onclick="setFilter('all', this)">Alle</div>
+      <div class="filter-chip" onclick="setFilter('active', this)">Aktiv</div>
+      <div class="filter-chip" onclick="setFilter('ready', this)">Bereit</div>
+      <div class="filter-chip" onclick="setFilter('inactive', this)">Inaktiv</div>
+    </div>
+    <div class="chart-container">
+      <h3>AGENTEN-PERFORMANCE — LETZTE 24H</h3>
+      <canvas id="performanceChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>RESSOURCENNUTZUNG — GESAMTSYSTEM</h3>
+      <div class="resource-bar">
+        <span class="resource-label">CPU</span>
+        <div class="resource-track"><div class="resource-fill cpu" id="cpuBar" style="width: 72%"></div></div>
+        <span class="resource-value" id="cpuValue">72%</span>
+      </div>
+      <div class="resource-bar">
+        <span class="resource-label">Speicher</span>
+        <div class="resource-track"><div class="resource-fill mem" id="memBar" style="width: 58%"></div></div>
+        <span class="resource-value" id="memValue">58%</span>
+      </div>
+      <div class="resource-bar">
+        <span class="resource-label">Netzwerk</span>
+        <div class="resource-track"><div class="resource-fill net" id="netBar" style="width: 45%"></div></div>
+        <span class="resource-value" id="netValue">45%</span>
+      </div>
+      <div class="resource-bar">
+        <span class="resource-label">GPU</span>
+        <div class="resource-track"><div class="resource-fill cpu" id="gpuBar" style="width: 83%"></div></div>
+        <span class="resource-value" id="gpuValue">83%</span>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h3>ORCHESTRIERUNGS-LOGS</h3>
+      <div class="log-container" id="systemLogs"></div>    </div>
+  </div>
+
+  <!-- Build Center Section -->
+  <div class="section-content" id="section-build">
+    <div class="section-hero">
+      <h2>BUILD-ZENTRUM</h2>
+      <p>Build-Pipelines, Bereitstellungs-Fortschritt und CI/CD-Status</p>
+    </div>
+    <div class="section-grid">
+      <div class="info-card holo-card">
+        <h3>🔧 CI/CD-PIPELINE</h3>
+        <div class="card-metric">12</div>
+        <p>Aktive Pipelines laufen über alle Agenten</p>
+        <div style="margin-top:12px">
+          <div class="resource-bar">
+            <span class="resource-label">Build</span>
+            <div class="resource-track"><div class="resource-fill cpu" style="width:85%"></div></div>
+            <span class="resource-value">85%</span>
+          </div>
+          <div class="resource-bar">
+            <span class="resource-label">Test</span>
+            <div class="resource-track"><div class="resource-fill mem" style="width:62%"></div></div>
+            <span class="resource-value">62%</span>
+          </div>
+          <div class="resource-bar">
+            <span class="resource-label">Deploy</span>
+            <div class="resource-track"><div class="resource-fill net" style="width:40%"></div></div>
+            <span class="resource-value">40%</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card holo-card">
+        <h3>📦 BEREITSTELLUNGS-STATUS</h3>
+        <div class="card-metric" style="color: var(--neon-blue);">3</div>
+        <p>Bereitstellungen in Bearbeitung</p>
+        <div style="margin-top:12px; font-size:13px; color: var(--text-secondary);">
+          <div style="padding:6px 0; border-bottom: 1px solid rgba(0,212,255,0.08);">
+            <span style="color:var(--neon-green)">●</span> Frontend-Build — <span style="color:var(--neon-green)">Erfolgreich</span>
+          </div>
+          <div style="padding:6px 0; border-bottom: 1px solid rgba(0,212,255,0.08);">
+            <span style="color:var(--neon-orange)">●</span> API-Gateway — <span style="color:var(--neon-orange)">Wird gebaut</span>
+          </div>
+          <div style="padding:6px 0;">
+            <span style="color:var(--neon-blue)">●</span> Datenbank-Migration — <span style="color:var(--neon-blue)">In Warteschlange</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card holo-card">
+        <h3>📊 BUILD-HISTORIE</h3>        <div class="card-metric" style="color: var(--neon-purple);">94%</div>
+        <p>Erfolgsrate der Builds (letzte 30 Tage)</p>
+        <div style="margin-top:12px; font-size:12px; color: var(--text-secondary);">
+          Gesamte Builds: 1.247 | Fehlgeschlagen: 73 | Ø-Dauer: 4m 32s
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agents Section -->
+  <div class="section-content" id="section-agents">
+    <div class="section-hero">
+      <h2>AGENTEN-VERWALTUNG</h2>
+      <p>Konfigurieren, Workflows anpassen und alle KI-Agenten verwalten</p>
+    </div>
+    <div class="search-filter-bar">
+      <input type="text" class="search-input" placeholder="🔍 Agenten suchen..." id="agentSearch2" oninput="filterAgents2()">
+      <div class="filter-chip active" onclick="setFilter2('all', this)">Alle</div>
+      <div class="filter-chip" onclick="setFilter2('active', this)">Aktiv</div>
+      <div class="filter-chip" onclick="setFilter2('ready', this)">Bereit</div>
+    </div>
+    <div class="section-grid" id="agentsManagementGrid">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+
+  <!-- Data Tool Section -->
+  <div class="section-content" id="section-data">
+    <div class="section-hero">
+      <h2>DATEN-TOOL</h2>
+      <p>Projektdaten analysieren, visualisieren und verwalten</p>
+    </div>
+    <div class="section-grid">
+      <div class="info-card holo-card">
+        <h3>📈 AUFGABEN-ABSCHLUSSRATE</h3>
+        <div class="card-metric">78%</div>
+        <p>Durchschnittliche Aufgaben-Abschlussrate aller Agenten</p>
+      </div>
+      <div class="info-card holo-card">
+        <h3>⏱ Ø-ANTWORTZEIT</h3>
+        <div class="card-metric" style="color: var(--neon-blue);">1,2s</div>
+        <p>Durchschnittliche Antwortzeit pro Anfrage</p>
+      </div>
+      <div class="info-card holo-card">
+        <h3>⚠ FEHLERRATE</h3>
+        <div class="card-metric" style="color: var(--neon-orange);">2,3%</div>
+        <p>Fehlerrate bei allen Agenten-Operationen</p>
+      </div>
+      <div class="info-card holo-card">
+        <h3>📊 GESAMTE AUFGABEN</h3>        <div class="card-metric" style="color: var(--neon-purple);">652</div>
+        <p>Gesamte Aufgaben aller Agenten (450 abgeschlossen)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Labs Section -->
+  <div class="section-content" id="section-ai-labs">
+    <div class="section-hero">
+      <h2>KI-LABOR</h2>
+      <p>Experimentelle Tools und Modell-Trainings-Schnittstellen</p>
+    </div>
+    <div class="section-grid">
+      <div class="info-card holo-card">
+        <h3>🧪 MODELL-TRAINING</h3>
+        <p>Trainiere benutzerdefinierte Modelle für spezifische Projektanforderungen. Konfiguriere Hyperparameter und überwache den Trainingsfortschritt in Echtzeit.</p>
+        <button class="btn-create" style="margin-top:12px; width:100%; justify-content:center;" onclick="showToast('Modell-Trainings-Schnittstelle startet...')">Training starten</button>
+      </div>
+      <div class="info-card holo-card">
+        <h3>💬 PROMPT-ENGINEERING</h3>
+        <p>Experimentiere mit verschiedenen Prompt-Vorlagen und Agenten-Konfigurationen, um Output-Qualität und Effizienz zu optimieren.</p>
+        <button class="btn-create" style="margin-top:12px; width:100%; justify-content:center;" onclick="showToast('Prompt-Engineering-Tools werden geladen...')">Labor öffnen</button>
+      </div>
+      <div class="info-card holo-card">
+        <h3>📊 AGENTEN-BENCHMARKING</h3>
+        <p>Vergleiche Agenten-Performance über verschiedene Aufgaben und Konfigurationen. Führe A/B-Tests durch, um das optimale Setup zu finden.</p>
+        <button class="btn-create" style="margin-top:12px; width:100%; justify-content:center;" onclick="showToast('Benchmarking-Suite startet...')">Benchmark starten</button>
+      </div>
+      <div class="info-card holo-card">
+        <h3>🧠 NEURALE ARCHITEKTUR</h3>
+        <p>Entwerfe und teste neue neuronale Netzwerk-Architekturen für spezifische Coding-Aufgaben und Problembereiche.</p>
+        <button class="btn-create" style="margin-top:12px; width:100%; justify-content:center;" onclick="showToast('Neuraler Architektur-Designer öffnet...')">Designer öffnen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs Section -->
+  <div class="section-content" id="section-logs">
+    <div class="section-hero">
+      <h2>AUDIT-LOGS</h2>
+      <p>Vollständige Prüfspur von Benutzeraktionen und Agenten-Aktivitäten</p>
+    </div>
+    <div class="chart-container">
+      <h3>SYSTEM-EREIGNIS-LOG</h3>
+      <div class="log-container" id="auditLogs" style="max-height: 400px;"></div>
+    </div>
+  </div>
+
+  <!-- Projects Section -->
+  <div class="section-content" id="section-projects">    <div class="section-hero">
+      <h2>PROJEKTE</h2>
+      <p>Verwalte alle deine Coding-Projekte und Arbeitsbereiche</p>
+    </div>
+    <div style="text-align:center; margin-bottom:20px;">
+      <button class="btn-create" onclick="openCreateProject()" style="font-size:16px; padding:12px 32px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Neues Projekt erstellen
+      </button>
+    </div>
+    <div class="section-grid">
+      <div class="info-card holo-card" style="border-color: rgba(0,255,136,0.2);">
+        <h3 style="color:var(--neon-green);">VIBE CODING PLATFORM</h3>
+        <p style="margin-bottom:10px;">Aktives Entwicklungsprojekt mit 10 KI-Agenten, die Full-Stack-Entwicklung orchestrieren.</p>
+        <div class="progress-bar-container" style="height:8px;">
+          <div class="progress-bar active-progress" style="width:68%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-secondary);">
+          <span>68% Abgeschlossen</span>
+          <span>450/652 Aufgaben</span>
+        </div>
+      </div>
+      <div class="info-card holo-card">
+        <h3>E-COMMERCE-API</h3>
+        <p style="margin-bottom:10px;">RESTful-API-Entwicklung mit Datenbank-Integration und Authentifizierung.</p>
+        <div class="progress-bar-container" style="height:8px;">
+          <div class="progress-bar active-progress" style="width:42%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-secondary);">
+          <span>42% Abgeschlossen</span>
+          <span>210/500 Aufgaben</span>
+        </div>
+      </div>
+      <div class="info-card holo-card">
+        <h3>MOBILE APP-UI</h3>
+        <p style="margin-bottom:10px;">React Native Mobile-Anwendung mit benutzerdefinierten UI-Komponenten.</p>
+        <div class="progress-bar-container" style="height:8px;">
+          <div class="progress-bar ready-progress" style="width:85%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-secondary);">
+          <span>85% Abgeschlossen</span>
+          <span>340/400 Aufgaben</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Section -->
+  <div class="section-content" id="section-settings">
+    <div class="section-hero">      <h2>EINSTELLUNGEN</h2>
+      <p>Dashboard-Präferenzen und Agenten-Parameter konfigurieren</p>
+    </div>
+    <div class="settings-section">
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Dunkel- / Hell-Modus</h4>
+          <p>Umschalten zwischen dunklem und hellem UI-Design</p>
+        </div>
+        <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Agenten-Auto-Glow</h4>
+          <p>Pulsierende Glow-Effekte für aktive Agenten aktivieren</p>
+        </div>
+        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Echtzeit-Updates</h4>
+          <p>Live-Fortschrittsbalken und Metrik-Updates aktivieren</p>
+        </div>
+        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Sound-Benachrichtigungen</h4>
+          <p>Töne für Aufgabenabschlüsse und Warnungen abspielen</p>
+        </div>
+        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Kompakte Ansicht</h4>
+          <p>Kartengrößen reduzieren für mehr Agenten auf dem Bildschirm</p>
+        </div>
+        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>Auto-Save Workflows</h4>
+          <p>Agenten-Workflow-Konfigurationen automatisch speichern</p>
+        </div>
+        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- Agent Detail Modal -->
+<div class="modal-overlay" id="agentModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeAgentModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-avatar">
+        <img id="modalAvatarImg" src="" alt="Agent">
+      </div>
+      <div class="modal-title-group">
+        <h2 id="modalAgentName"></h2>
+        <p id="modalAgentRole"></p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Aktuelle Aufgabe</div>
+        <div class="modal-task-desc" id="modalTaskDesc"></div>
+      </div>
+      
+      <!-- API Configuration Section -->
+      <div class="modal-section">
+        <div class="modal-section-title">🔌 API-Konfiguration</div>
+        <div class="api-config-grid">
+          <div class="form-group">
+            <label>API-Endpunkt</label>
+            <input type="text" id="apiEndpoint" placeholder="https://api.example.com/v1/agent">
+          </div>
+          <div class="form-group">
+            <label>Authentifizierung</label>
+            <select id="authType">
+              <option value="none">Keine</option>
+              <option value="bearer">Bearer Token</option>
+              <option value="apikey">API Key</option>
+              <option value="basic">Basic Auth</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label>API-Schlüssel / Token</label>
+            <input type="password" id="apiKey" placeholder="••••••••••••••••">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Custom Prompt Section -->
+      <div class="modal-section">
+        <div class="modal-section-title">💬 Benutzerdefinierter Prompt</div>
+        <textarea class="prompt-textarea" id="customPrompt" placeholder="Gib hier den individuellen Prompt für diesen Agenten ein. Variablen wie {task}, {context}, {output_format} können verwendet werden..."></textarea>
+      </div>
+      
+      <div class="modal-section">        <div class="modal-section-title">Fortschritt</div>
+        <div class="modal-progress-row">
+          <div class="modal-progress-bar">
+            <div class="modal-progress-fill" id="modalProgressBar"></div>
+          </div>
+          <div class="modal-progress-text" id="modalProgressPct"></div>
+        </div>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">Ressourcennutzung</div>
+        <div class="resource-bar">
+          <span class="resource-label">CPU</span>
+          <div class="resource-track"><div class="resource-fill cpu" id="modalCpuBar" style="width:0%"></div></div>
+          <span class="resource-value" id="modalCpuValue">0%</span>
+        </div>
+        <div class="resource-bar">
+          <span class="resource-label">Speicher</span>
+          <div class="resource-track"><div class="resource-fill mem" id="modalMemBar" style="width:0%"></div></div>
+          <span class="resource-value" id="modalMemValue">0%</span>
+        </div>
+        <div class="resource-bar">
+          <span class="resource-label">Netzwerk</span>
+          <div class="resource-track"><div class="resource-fill net" id="modalNetBar" style="width:0%"></div></div>
+          <span class="resource-value" id="modalNetValue">0%</span>
+        </div>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">Aufgabenplanung</div>
+        <div class="schedule-row">
+          <select id="scheduleType">
+            <option>Einmal ausführen</option>
+            <option>Jede Stunde</option>
+            <option>Alle 6 Stunden</option>
+            <option>Täglich</option>
+            <option>Wöchentlich</option>
+          </select>
+          <input type="datetime-local" id="scheduleTime">
+          <button class="btn-create" style="padding:8px 14px; font-size:11px;" onclick="showToast('Aufgabe erfolgreich geplant')">Planen</button>
+        </div>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">Aktivitäts-Logs</div>
+        <div class="log-container" id="modalLogs"></div>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">Team-Chat</div>        <div class="chat-messages" id="chatMessages">
+          <div class="chat-msg agent">Agent initialisiert und bereit für Aufgabenzuweisung.</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Nachricht eingeben..." id="chatInput" onkeypress="if(event.key==='Enter')sendChat()">
+          <button class="btn-chat-send" onclick="sendChat()">Senden</button>
+        </div>
+      </div>
+      
+      <div class="config-footer">
+        <button class="btn-modal btn-save" onclick="saveAgentConfig()">💾 Konfiguration speichern</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-pause" id="btnPause" onclick="pauseAgent()">⏸ Pausieren</button>
+      <button class="btn-modal btn-inspect" onclick="showToast('Agenten-Workflow wird inspectiert...')">🔍 Inspizieren</button>
+      <button class="btn-modal btn-resume" id="btnResume" onclick="resumeAgent()" style="display:none;">▶ Fortsetzen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Project Modal -->
+<div class="create-project-modal" id="createProjectModal">
+  <div class="create-project-content">
+    <button class="modal-close" onclick="closeCreateProject()">✕</button>
+    <h2>NEUES PROJEKT ERSTELLEN</h2>
+    <div class="form-group">
+      <label>Projektname</label>
+      <input type="text" placeholder="Projektnamen eingeben..." id="projectName">
+    </div>
+    <div class="form-group">
+      <label>Beschreibung</label>
+      <textarea placeholder="Beschreibe dein Projekt..." id="projectDesc"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Projekttyp</label>
+      <select id="projectType">
+        <option>Full-Stack-Anwendung</option>
+        <option>Nur Frontend</option>
+        <option>Backend-API</option>
+        <option>Mobile App</option>
+        <option>KI/ML-Pipeline</option>
+        <option>DevOps / Infrastruktur</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Anzahl der Agenten</label>
+      <select id="agentCount">
+        <option>3 Agenten</option>
+        <option>5 Agenten</option>        <option selected>10 Agenten</option>
+        <option>15 Agenten</option>
+        <option>20 Agenten</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeCreateProject()">Abbrechen</button>
+      <button class="btn-submit" onclick="submitProject()">Projekt erstellen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Credits Modal -->
+<div class="credits-modal" id="creditsModal">
+  <div class="credits-content">
+    <button class="modal-close" onclick="closeCreditsModal()">✕</button>
+    <h2>DEINE CREDITS</h2>
+    <div class="credits-amount">500</div>
+    <div class="credits-label">Verfügbare Credits</div>
+    <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+      Erhalte 500 Credits für jeden Kontakt, der CoderXP abonniert
+    </div>
+    <div class="referral-section">
+      <h3>👥 EMPFEHLEN & VERDIENEN</h3>
+      <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">Teile deinen Link und verdiene Credits, wenn Kontakte abonnieren</p>
+      <div class="referral-link">
+        <input type="text" value="https://coderxp.pro/ref/user_xp2026" readonly id="referralLink">
+        <button class="btn-copy" onclick="copyReferral()">Kopieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="navigateTo('dashboard')">Missionskontrolle</div>
+  <div class="nav-item" onclick="navigateTo('monitoring')">Überwachung</div>
+  <div class="nav-item" onclick="navigateTo('build')">Build-Zentrum</div>
+  <div class="nav-item" onclick="navigateTo('agents')">Agenten</div>
+  <div class="nav-item" onclick="navigateTo('data')">Daten-Tool</div>
+  <div class="nav-item" onclick="navigateTo('ai-labs')">KI-Labor</div>
+  <div class="nav-item" onclick="navigateTo('logs')">Logs</div>
+  <div class="nav-item" onclick="navigateTo('projects')">Projekte</div>
+  <div class="nav-item" onclick="navigateTo('settings')">Einstellungen</div>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>// Agent Data mit API & Prompt Feldern
+const agentData = [
+  {
+    id: 1, name: "1. CORE ARCHITEKT", role: "System-Infrastruktur entwerfen",
+    status: "active", progress: 75, task: "Große Diagramme codieren",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:15:22", level: "info", msg: "Architektur-Modul initialisiert" },
+      { time: "09:22:45", level: "info", msg: "System-Blueprint v2.1 generiert" },
+      { time: "09:45:10", level: "success", msg: "Infrastruktur-Diagramm abgeschlossen" },
+      { time: "10:01:33", level: "info", msg: "Komponenten-Abhängigkeiten werden geprüft" },
+      { time: "10:15:00", level: "warn", msg: "Hohe Speichernutzung erkannt" }
+    ],
+    cpu: 78, mem: 65, net: 42
+  },
+  {
+    id: 2, name: "2. FRONTEND-LEAD", role: "Benutzeroberfläche entwickeln",
+    status: "ready", progress: 55, task: "React-Komponenten",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:10:00", level: "info", msg: "UI-Framework initialisiert" },
+      { time: "09:30:15", level: "info", msg: "Komponenten-Bibliothek geladen" },
+      { time: "09:55:22", level: "success", msg: "Dashboard-Layout gerendert" }
+    ],
+    cpu: 45, mem: 52, net: 38
+  },
+  {
+    id: 3, name: "3. BACKEND-ENTWICKLER", role: "APIs & Services entwickeln",
+    status: "active", progress: 62, task: "APIs & Services entwickeln",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:05:00", level: "info", msg: "API-Gateway konfiguriert" },
+      { time: "09:25:30", level: "info", msg: "REST-Endpunkte generiert" },
+      { time: "09:50:45", level: "success", msg: "Authentifizierungs-Service bereitgestellt" },
+      { time: "10:10:12", level: "info", msg: "Rate-Limiting-Middleware aktiv" }
+    ],
+    cpu: 82, mem: 71, net: 55
+  },
+  {
+    id: 4, name: "4. DATENBANK-INGENIEUR", role: "Daten-Schemata optimieren",
+    status: "active", progress: 45, task: "Daten-Schemata",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:12:00", level: "info", msg: "Datenbank-Schema initialisiert" },
+      { time: "09:40:20", level: "info", msg: "Index-Optimierung läuft" },
+      { time: "10:05:33", level: "warn", msg: "Langsame Abfrage auf Tabelle 'users' erkannt" }
+    ],
+    cpu: 65, mem: 80, net: 30
+  },
+  {    id: 5, name: "5. API-INTEGRATOR", role: "Drittanbieter-Systeme verbinden",
+    status: "ready", progress: 38, task: "APIs mappen",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:18:00", level: "info", msg: "Drittanbieter-API-Katalog geladen" },
+      { time: "09:55:10", level: "info", msg: "OAuth-Flow konfiguriert" }
+    ],
+    cpu: 35, mem: 40, net: 60
+  },
+  {
+    id: 6, name: "6. KI-ENGINE-ENTWICKLER", role: "ML-Modelle trainieren",
+    status: "active", progress: 69, task: "ML-Modelle",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:08:00", level: "info", msg: "Trainings-Pipeline initialisiert" },
+      { time: "09:35:22", level: "info", msg: "Epoche 45/100 — Verlust: 0,0234" },
+      { time: "10:00:15", level: "success", msg: "Modell-Validierungsgenauigkeit: 94,2%" },
+      { time: "10:20:00", level: "info", msg: "Modell wird auf Inferenz-Engine bereitgestellt" }
+    ],
+    cpu: 92, mem: 88, net: 25
+  },
+  {
+    id: 7, name: "7. DEVOPS-SPEZIALIST", role: "CI/CD-Pipeline einrichten",
+    status: "active", progress: 65, task: "Code bereitstellen",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:00:00", level: "info", msg: "CI/CD-Pipeline konfiguriert" },
+      { time: "09:20:30", level: "info", msg: "Docker-Images erfolgreich gebaut" },
+      { time: "09:45:00", level: "success", msg: "K8s-Bereitstellung aktualisiert" },
+      { time: "10:15:22", level: "info", msg: "Monitoring-Stack bereitgestellt" }
+    ],
+    cpu: 58, mem: 55, net: 72
+  },
+  {
+    id: 8, name: "8. TESTING & QA", role: "Unit-Tests ausführen",
+    status: "active", progress: 82, task: "Unit-Tests",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:02:00", level: "info", msg: "Test-Suite initialisiert" },
+      { time: "09:30:00", level: "success", msg: "847/900 Tests bestanden" },
+      { time: "10:00:45", level: "warn", msg: "53 Tests fehlgeschlagen — Überprüfung läuft" },
+      { time: "10:25:10", level: "success", msg: "Alle Tests nach Fixes bestanden" }
+    ],
+    cpu: 45, mem: 38, net: 20
+  },
+  {
+    id: 9, name: "9. SICHERHEITSEXPERTE", role: "Code & Schwachstellen auditieren",
+    status: "active", progress: 48, task: "Netzwerk-Pfade",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [      { time: "09:10:00", level: "info", msg: "Sicherheits-Scan gestartet" },
+      { time: "09:40:15", level: "warn", msg: "Mögliche XSS-Schwachstelle gefunden" },
+      { time: "10:05:30", level: "info", msg: "Patch für CVE-2025-1234 angewendet" },
+      { time: "10:20:45", level: "success", msg: "Sicherheits-Audit Phase 1 abgeschlossen" }
+    ],
+    cpu: 55, mem: 48, net: 35
+  },
+  {
+    id: 10, name: "10. BEREITSTELLUNGS-SPEZIALIST", role: "Finale System-Bereitstellung",
+    status: "ready", progress: 25, task: "Releases vorbereiten",
+    apiEndpoint: "", authType: "none", apiKey: "", customPrompt: "",
+    logs: [
+      { time: "09:15:00", level: "info", msg: "Bereitstellungsumgebung bereit" },
+      { time: "09:50:20", level: "info", msg: "Release-Notes generiert" }
+    ],
+    cpu: 30, mem: 35, net: 45
+  }
+];
+
+const agentImageUrl = "https://image.qwenlm.ai/public_source/c2724abc-8ead-4f46-917b-1224d838d449/1d0c9ced5-48d5-42e1-8803-fc84e35dd27f.png";
+
+let currentAgentId = null;
+let agentPaused = {};
+let currentFilter = 'all';
+let currentFilter2 = 'all';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  renderAgents();
+  renderAgentsManagement();
+  drawOrchestratorChart();
+  drawPerformanceChart();
+  populateLogs();
+  startProgressUpdates();
+  startResourceUpdates();
+});
+
+function renderAgents() {
+  const grid = document.getElementById('agentsGrid');
+  grid.innerHTML = '';
+  agentData.forEach((agent, idx) => {
+    const isPaused = agentPaused[agent.id];
+    const card = document.createElement('div');
+    card.className = `agent-card holo-card ${agent.status === 'active' && !isPaused ? 'active-agent' : ''}`;
+    card.onclick = () => openAgentModal(agent.id);
+    card.innerHTML = `
+      <div class="agent-card-header">
+        <span class="agent-number">AGENT ${String(agent.id).padStart(2, '0')}</span>
+        <span class="agent-role-badge ${agent.status}">${agent.status === 'active' && !isPaused ? '<span class="pulse-dot"></span>' : ''}${isPaused ? 'PAUSIERT' : agent.status === 'active' ? 'AKTIV' : 'BEREIT'}</span>
+      </div>      <div class="agent-name">${agent.name}</div>
+      <div class="agent-task">${isPaused ? '⏸ Vom Benutzer pausiert' : agent.role}</div>
+      <div class="agent-avatar-row">
+        <div class="agent-avatar-small">
+          <img src="${agentImageUrl}" alt="${agent.name}">
+        </div>
+        <div class="agent-progress-info">
+          <div class="progress-label">Fortschritt: ${agent.task}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar ${agent.status === 'active' ? 'active-progress' : 'ready-progress'}" style="width:${agent.progress}%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="agent-progress-pct">${agent.progress}%</div>
+      <div class="agent-footer">
+        <span class="agent-current-task">${isPaused ? '⏸ Pausiert' : agent.task}</span>
+        <div class="agent-metrics">
+          <span class="metric-pill">CPU ${agent.cpu}%</span>
+          <span class="metric-pill">SP ${agent.mem}%</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderAgentsManagement() {
+  const grid = document.getElementById('agentsManagementGrid');
+  grid.innerHTML = '';
+  agentData.forEach(agent => {
+    const card = document.createElement('div');
+    card.className = 'info-card holo-card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => openAgentModal(agent.id);
+    card.innerHTML = `
+      <h3>${agent.name}</h3>
+      <p style="margin-bottom:10px;">${agent.role}</p>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <div class="agent-avatar-small" style="width:56px; height:56px;">
+          <img src="${agentImageUrl}" alt="${agent.name}">
+        </div>
+        <div style="flex:1;">
+          <span class="agent-role-badge ${agent.status}">${agent.status === 'active' ? 'AKTIV' : 'BEREIT'}</span>
+          <div style="margin-top:6px;">
+            <div class="progress-bar-container" style="height:6px;">
+              <div class="progress-bar ${agent.status === 'active' ? 'active-progress' : 'ready-progress'}" style="width:${agent.progress}%"></div>
+            </div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">${agent.progress}% — ${agent.task}</div>
+          </div>
+        </div>      </div>
+      <div style="display:flex; gap:8px;">
+        <span class="metric-pill">CPU ${agent.cpu}%</span>
+        <span class="metric-pill">SP ${agent.mem}%</span>
+        <span class="metric-pill">NET ${agent.net}%</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openAgentModal(agentId) {
+  const agent = agentData.find(a => a.id === agentId);
+  if (!agent) return;
+  currentAgentId = agentId;
+
+  document.getElementById('modalAvatarImg').src = agentImageUrl;
+  document.getElementById('modalAgentName').textContent = agent.name;
+  document.getElementById('modalAgentRole').textContent = agent.role;
+  document.getElementById('modalTaskDesc').textContent = agentPaused[agentId] ? '⏸ Dieser Agent wurde vom Benutzer pausiert. Fortsetzen, um die Aufgabenausführung fortzusetzen.' : agent.role + ' — ' + agent.task;
+  
+  // API Config
+  document.getElementById('apiEndpoint').value = agent.apiEndpoint || '';
+  document.getElementById('authType').value = agent.authType || 'none';
+  document.getElementById('apiKey').value = agent.apiKey || '';
+  
+  // Custom Prompt
+  document.getElementById('customPrompt').value = agent.customPrompt || '';
+  
+  document.getElementById('modalProgressBar').style.width = agent.progress + '%';
+  document.getElementById('modalProgressPct').textContent = agent.progress + '%';
+  document.getElementById('modalCpuBar').style.width = agent.cpu + '%';
+  document.getElementById('modalCpuValue').textContent = agent.cpu + '%';
+  document.getElementById('modalMemBar').style.width = agent.mem + '%';
+  document.getElementById('modalMemValue').textContent = agent.mem + '%';
+  document.getElementById('modalNetBar').style.width = agent.net + '%';
+  document.getElementById('modalNetValue').textContent = agent.net + '%';
+
+  // Logs
+  const logContainer = document.getElementById('modalLogs');
+  logContainer.innerHTML = '';
+  agent.logs.forEach(log => {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <span class="log-time">${log.time}</span>
+      <span class="log-level-${log.level}">[${log.level.toUpperCase()}]</span>
+      <span class="log-msg">${log.msg}</span>
+    `;
+    logContainer.appendChild(entry);  });
+
+  // Pause/Resume buttons
+  const isPaused = agentPaused[agentId];
+  document.getElementById('btnPause').style.display = isPaused ? 'none' : 'inline-flex';
+  document.getElementById('btnResume').style.display = isPaused ? 'inline-flex' : 'none';
+
+  // Chat
+  document.getElementById('chatMessages').innerHTML = `<div class="chat-msg agent">Agent ${agent.id} initialisiert und bereit für Aufgabenzuweisung.</div>`;
+
+  document.getElementById('agentModal').classList.add('active');
+}
+
+function closeAgentModal() {
+  document.getElementById('agentModal').classList.remove('active');
+  currentAgentId = null;
+}
+
+function saveAgentConfig() {
+  if (currentAgentId === null) return;
+  const agent = agentData.find(a => a.id === currentAgentId);
+  if (!agent) return;
+  
+  agent.apiEndpoint = document.getElementById('apiEndpoint').value.trim();
+  agent.authType = document.getElementById('authType').value;
+  agent.apiKey = document.getElementById('apiKey').value.trim();
+  agent.customPrompt = document.getElementById('customPrompt').value.trim();
+  
+  showToast(`Konfiguration für ${agent.name} gespeichert`);
+}
+
+function pauseAgent() {
+  if (currentAgentId !== null) {
+    agentPaused[currentAgentId] = true;
+    document.getElementById('btnPause').style.display = 'none';
+    document.getElementById('btnResume').style.display = 'inline-flex';
+    document.getElementById('modalTaskDesc').textContent = '⏸ Dieser Agent wurde vom Benutzer pausiert. Fortsetzen, um die Aufgabenausführung fortzusetzen.';
+    renderAgents();
+    renderAgentsManagement();
+    showToast(`Agent ${currentAgentId} pausiert`);
+  }
+}
+
+function resumeAgent() {
+  if (currentAgentId !== null) {
+    agentPaused[currentAgentId] = false;
+    document.getElementById('btnPause').style.display = 'inline-flex';
+    document.getElementById('btnResume').style.display = 'none';
+    const agent = agentData.find(a => a.id === currentAgentId);
+    document.getElementById('modalTaskDesc').textContent = agent.role + ' — ' + agent.task;    renderAgents();
+    renderAgentsManagement();
+    showToast(`Agent ${currentAgentId} fortgesetzt`);
+  }
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const container = document.getElementById('chatMessages');
+  container.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+  setTimeout(() => {
+    const responses = [
+      "Aufgabe bestätigt. Wird jetzt verarbeitet.",
+      "Verstanden. Ich passe meinen Ansatz entsprechend an.",
+      "Bearbeite es. Melde Fortschritt in Kürze.",
+      "Erhalten. Aktualisiere Workflow-Parameter.",
+      "Bestätigt. Fahre mit aktueller Aufgabe fort."
+    ];
+    const response = responses[Math.floor(Math.random() * responses.length)];
+    container.innerHTML += `<div class="chat-msg agent">${response}</div>`;
+    container.scrollTop = container.scrollHeight;
+  }, 1000);
+}
+
+// Navigation
+function navigateTo(section) {
+  document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + section).classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if (item.textContent.toLowerCase().replace(/\s/g, '-') === section || 
+        (section === 'dashboard' && item.textContent === 'Missionskontrolle') ||
+        (section === 'build' && item.textContent === 'Build-Zentrum') ||
+        (section === 'data' && item.textContent === 'Daten-Tool') ||
+        (section === 'ai-labs' && item.textContent === 'KI-Labor')) {
+      item.classList.add('active');
+    }
+  });
+  if (section === 'monitoring') {
+    setTimeout(() => {
+      drawPerformanceChart();
+      populateLogs();
+    }, 100);
+  }
+}
+// Profile Dropdown
+function toggleProfileDropdown() {
+  document.getElementById('profileDropdown').classList.toggle('active');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.profile-container')) {
+    document.getElementById('profileDropdown').classList.remove('active');
+  }
+});
+
+// Create Project
+function openCreateProject() {
+  document.getElementById('createProjectModal').classList.add('active');
+}
+
+function closeCreateProject() {
+  document.getElementById('createProjectModal').classList.remove('active');
+}
+
+function submitProject() {
+  const name = document.getElementById('projectName').value.trim();
+  if (!name) {
+    showToast('Bitte Projektnamen eingeben');
+    return;
+  }
+  closeCreateProject();
+  showToast(`Projekt "${name}" erfolgreich erstellt!`);
+  document.getElementById('projectName').value = '';
+  document.getElementById('projectDesc').value = '';
+}
+
+// Credits
+function openCreditsModal() {
+  document.getElementById('creditsModal').classList.add('active');
+  document.getElementById('profileDropdown').classList.remove('active');
+}
+
+function closeCreditsModal() {
+  document.getElementById('creditsModal').classList.remove('active');
+}
+
+function copyReferral() {
+  const input = document.getElementById('referralLink');
+  input.select();
+  document.execCommand('copy');
+  showToast('Empfehlungs-Link kopiert!');
+}
+// Theme Toggle
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  document.getElementById('themeToggle').classList.toggle('active');
+}
+
+// Toast
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Filter Agents
+function filterAgents() {
+  const query = document.getElementById('agentSearch').value.toLowerCase();
+  const cards = document.querySelectorAll('#agentsGrid .agent-card');
+  cards.forEach((card, idx) => {
+    const agent = agentData[idx];
+    const matchSearch = !query || agent.name.toLowerCase().includes(query) || agent.role.toLowerCase().includes(query) || agent.status.includes(query);
+    const matchFilter = currentFilter === 'all' || agent.status === currentFilter;
+    card.style.display = matchSearch && matchFilter ? '' : 'none';
+  });
+}
+
+function setFilter(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.search-filter-bar .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterAgents();
+}
+
+function filterAgents2() {
+  const query = document.getElementById('agentSearch2').value.toLowerCase();
+  const cards = document.querySelectorAll('#agentsManagementGrid .info-card');
+  cards.forEach((card, idx) => {
+    const agent = agentData[idx];
+    const matchSearch = !query || agent.name.toLowerCase().includes(query) || agent.role.toLowerCase().includes(query);
+    const matchFilter = currentFilter2 === 'all' || agent.status === currentFilter2;
+    card.style.display = matchSearch && matchFilter ? '' : 'none';
+  });
+}
+
+function setFilter2(filter, el) {
+  currentFilter2 = filter;
+  el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterAgents2();
+}
+// Charts (unchanged for brevity - same logic as original)
+function drawOrchestratorChart() {
+  const canvas = document.getElementById('orchestratorChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = 120;
+  ctx.scale(2, 1);
+
+  const w = canvas.offsetWidth;
+  const h = 60;
+  const data = [20, 35, 45, 55, 50, 65, 68, 72, 60, 75, 80, 68];
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(0, 212, 255, 0.08)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < 4; i++) {
+    const y = (h / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, h);
+  gradient.addColorStop(0, 'rgba(0, 212, 255, 0.15)');
+  gradient.addColorStop(1, 'rgba(0, 212, 255, 0)');
+
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  const step = w / (data.length - 1);
+  data.forEach((val, i) => {
+    const x = i * step;
+    const y = h - (val / 100) * h;
+    if (i === 0) ctx.lineTo(x, y);
+    else {
+      const prevX = (i - 1) * step;
+      const prevY = h - (data[i - 1] / 100) * h;
+      const cpX = (prevX + x) / 2;
+      ctx.bezierCurveTo(cpX, prevY, cpX, y, x, y);
+    }
+  });
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  ctx.beginPath();
+  data.forEach((val, i) => {    const x = i * step;
+    const y = h - (val / 100) * h;
+    if (i === 0) ctx.moveTo(x, y);
+    else {
+      const prevX = (i - 1) * step;
+      const prevY = h - (data[i - 1] / 100) * h;
+      const cpX = (prevX + x) / 2;
+      ctx.bezierCurveTo(cpX, prevY, cpX, y, x, y);
+    }
+  });
+  ctx.strokeStyle = 'rgba(0, 212, 255, 0.8)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  const lastX = (data.length - 1) * step;
+  const lastY = h - (data[data.length - 1] / 100) * h;
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#00d4ff';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0, 212, 255, 0.2)';
+  ctx.fill();
+}
+
+function drawPerformanceChart() {
+  const canvas = document.getElementById('performanceChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = 240;
+  ctx.scale(2, 1);
+
+  const w = canvas.offsetWidth;
+  const h = 120;
+  const agents = ['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10'];
+  const values = [75, 55, 62, 45, 38, 69, 65, 82, 48, 25];
+  const barW = (w - 40) / agents.length;
+  const gap = 4;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(0, 212, 255, 0.06)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = (h / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();  }
+
+  agents.forEach((agent, i) => {
+    const x = 20 + i * barW;
+    const barH = (values[i] / 100) * (h - 20);
+    const y = h - barH - 10;
+
+    const grad = ctx.createLinearGradient(x, y, x, h - 10);
+    if (agentData[i].status === 'active') {
+      grad.addColorStop(0, 'rgba(0, 255, 136, 0.8)');
+      grad.addColorStop(1, 'rgba(0, 255, 136, 0.2)');
+    } else {
+      grad.addColorStop(0, 'rgba(0, 212, 255, 0.6)');
+      grad.addColorStop(1, 'rgba(0, 212, 255, 0.1)');
+    }
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    const r = 3;
+    ctx.moveTo(x + gap, h - 10);
+    ctx.lineTo(x + gap, y + r);
+    ctx.quadraticCurveTo(x + gap, y, x + gap + r, y);
+    ctx.lineTo(x + barW - gap - r, y);
+    ctx.quadraticCurveTo(x + barW - gap, y, x + barW - gap, y + r);
+    ctx.lineTo(x + barW - gap, h - 10);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '9px Rajdhani';
+    ctx.textAlign = 'center';
+    ctx.fillText(agent, x + barW / 2, h - 2);
+  });
+}
+
+function populateLogs() {
+  const systemLogs = document.getElementById('systemLogs');
+  if (!systemLogs) return;
+  const logs = [
+    { time: "10:25:01", level: "info", msg: "Orchestrator mit 10 Agenten synchronisiert" },
+    { time: "10:24:45", level: "success", msg: "Agent 8 (Testing & QA) hat Unit-Test-Charge #47 abgeschlossen" },
+    { time: "10:24:12", level: "info", msg: "Agent 3 (Back-End) hat API v2.3.1 bereitgestellt" },
+    { time: "10:23:55", level: "warn", msg: "Hohe Speichernutzung bei Agent 4 (Datenbank-Ing.): 80%" },
+    { time: "10:23:30", level: "info", msg: "Agent 6 (KI-Engine) trainiert Epoche 78/100" },
+    { time: "10:23:00", level: "success", msg: "CI/CD-Pipeline Build #1247 bestanden" },
+    { time: "10:22:15", level: "info", msg: "Agent 9 (Sicherheit) Scan abgeschlossen — 0 kritische Funde" },
+    { time: "10:21:45", level: "info", msg: "Projekt-Orchestrator Fortschritt: 68% (450/652 Aufgaben)" },
+    { time: "10:21:00", level: "success", msg: "Agent 7 (DevOps) hat Monitoring-Stack bereitgestellt" },
+    { time: "10:20:30", level: "info", msg: "Agent 1 (Core Architekt) prüft Komponenten-Abhängigkeiten" },
+  ];  systemLogs.innerHTML = '';
+  logs.forEach(log => {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <span class="log-time">${log.time}</span>
+      <span class="log-level-${log.level}">[${log.level.toUpperCase()}]</span>
+      <span class="log-msg">${log.msg}</span>
+    `;
+    systemLogs.appendChild(entry);
+  });
+
+  const auditLogs = document.getElementById('auditLogs');
+  if (!auditLogs) return;
+  const auditEntries = [
+    { time: "10:25:01", level: "info", msg: "Benutzer: Admin — Missionskontrolle-Dashboard angezeigt" },
+    { time: "10:20:15", level: "info", msg: "System — Workflow für Agent 3 automatisch gespeichert" },
+    { time: "10:15:30", level: "success", msg: "Benutzer: Admin — Projekt 'Vibe Coding Platform' erstellt" },
+    { time: "10:10:00", level: "info", msg: "System — Agent 6 Trainings-Checkpoint gespeichert" },
+    { time: "10:05:22", level: "warn", msg: "System — Speichergrenze bei Agent 4 überschritten" },
+    { time: "10:00:00", level: "info", msg: "System — Tägliches Backup erfolgreich abgeschlossen" },
+    { time: "09:55:10", level: "success", msg: "Agent 8 — Alle 900 Unit-Tests bestanden" },
+    { time: "09:50:00", level: "info", msg: "Benutzer: Admin — Agenten-Workflow-Konfiguration aktualisiert" },
+    { time: "09:45:30", level: "info", msg: "System — Sicherheits-Patch CVE-2025-1234 angewendet" },
+    { time: "09:40:00", level: "success", msg: "Agent 3 — API v2.3.1 auf Staging bereitgestellt" },
+    { time: "09:35:15", level: "info", msg: "Benutzer: Dev — Build-Zentrum aufgerufen" },
+    { time: "09:30:00", level: "info", msg: "System — Agenten-Pool initialisiert (10 Agenten)" },
+    { time: "09:25:00", level: "success", msg: "System — Alle Systeme betriebsbereit" },
+    { time: "09:20:00", level: "info", msg: "Benutzer: Admin — Angemeldet von 192.168.1.100" },
+  ];
+  auditLogs.innerHTML = '';
+  auditEntries.forEach(log => {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <span class="log-time">${log.time}</span>
+      <span class="log-level-${log.level}">[${log.level.toUpperCase()}]</span>
+      <span class="log-msg">${log.msg}</span>
+    `;
+    auditLogs.appendChild(entry);
+  });
+}
+
+// Progress Updates
+function startProgressUpdates() {
+  setInterval(() => {
+    agentData.forEach(agent => {
+      if (agent.status === 'active' && !agentPaused[agent.id] && agent.progress < 100) {
+        agent.progress = Math.min(100, agent.progress + Math.random() * 0.5);
+        agent.cpu = Math.max(20, Math.min(98, agent.cpu + (Math.random() - 0.5) * 5));        agent.mem = Math.max(20, Math.min(95, agent.mem + (Math.random() - 0.5) * 3));
+        agent.net = Math.max(10, Math.min(90, agent.net + (Math.random() - 0.5) * 4));
+      }
+    });
+
+    const totalProgress = agentData.reduce((sum, a) => sum + a.progress, 0) / agentData.length;
+    const overallEl = document.getElementById('overallProgress');
+    if (overallEl) overallEl.textContent = Math.round(totalProgress) + '%';
+
+    renderAgents();
+    renderAgentsManagement();
+  }, 3000);
+}
+
+// Resource Updates
+function startResourceUpdates() {
+  setInterval(() => {
+    const cpu = Math.max(40, Math.min(95, 72 + (Math.random() - 0.5) * 10));
+    const mem = Math.max(30, Math.min(90, 58 + (Math.random() - 0.5) * 8));
+    const net = Math.max(20, Math.min(80, 45 + (Math.random() - 0.5) * 12));
+    const gpu = Math.max(50, Math.min(98, 83 + (Math.random() - 0.5) * 8));
+
+    const cpuBar = document.getElementById('cpuBar');
+    const memBar = document.getElementById('memBar');
+    const netBar = document.getElementById('netBar');
+    const gpuBar = document.getElementById('gpuBar');
+    if (cpuBar) {
+      cpuBar.style.width = cpu + '%';
+      document.getElementById('cpuValue').textContent = Math.round(cpu) + '%';
+      memBar.style.width = mem + '%';
+      document.getElementById('memValue').textContent = Math.round(mem) + '%';
+      netBar.style.width = net + '%';
+      document.getElementById('netValue').textContent = Math.round(net) + '%';
+      gpuBar.style.width = gpu + '%';
+      document.getElementById('gpuValue').textContent = Math.round(gpu) + '%';
+    }
+  }, 2000);
+}
+
+// Resize handler
+window.addEventListener('resize', () => {
+  drawOrchestratorChart();
+  if (document.getElementById('section-monitoring').classList.contains('active')) {
+    drawPerformanceChart();
+  }
+});
+</script>
+</body>
+</html>
